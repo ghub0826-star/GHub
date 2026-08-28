@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>GHub - Marketplace Game Aman untuk Item, Akun dan Top Up</title>
+    <meta
+      name="description"
+      content="Marketplace game modern untuk membeli dan menjual item, akun, currency, top up, dan layanan game dengan sistem transaksi aman."
+    />
+    <meta name="keywords" content="marketplace game, top up, beli diamond, akun game, seller game, GHub" />
+    <meta name="theme-color" content="#0a0a12" />
+    <meta name="robots" content="index,follow" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://domain-ghub.com/" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="GHub - Marketplace Game Aman untuk Item, Akun dan Top Up" />
+    <meta
+      property="og:description"
+      content="Marketplace game modern untuk membeli dan menjual item, akun, currency, top up, dan layanan game dengan sistem transaksi aman."
+    />
+    <meta property="og:image" content="/assets/site-bg.png" />
+    <meta property="og:url" content="https://domain-ghub.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="GHub" />
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GHub - Marketplace Game Aman untuk Item, Akun dan Top Up" />
+    <meta
+      name="twitter:description"
+      content="Marketplace game modern untuk membeli dan menjual item, akun, currency, top up, dan layanan game dengan sistem transaksi aman."
+    />
+    <meta name="twitter:image" content="/assets/site-bg.png" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/assets/Logo Ghub.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="GHub" />
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script>
+      // Register service worker (only in production-style, and only when supported)
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .catch(function (err) {
+              console.warn('SW registration failed', err);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>

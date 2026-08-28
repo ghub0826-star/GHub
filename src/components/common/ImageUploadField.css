@@ -1,0 +1,323 @@
+/* =========================================================
+   ImageUploadField — shared upload component
+   Terintegrasi dengan design system GHub (dark & light theme)
+   ========================================================= */
+
+.iuf-root {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+/* ── Label ── */
+.iuf-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary, #b9c1d7);
+  margin: 0;
+}
+
+/* Light-theme override (seller-register-page-wrapper) */
+.seller-register-page-wrapper .iuf-label {
+  color: #374151;
+}
+
+.iuf-required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+/* ── Drop zone ── */
+.iuf-dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  cursor: pointer;
+  border: 2px dashed rgba(139, 92, 246, 0.35);
+  border-radius: 14px;
+  background: rgba(139, 92, 246, 0.04);
+  color: var(--muted, #8992aa);
+  transition: border-color 0.18s, background 0.18s;
+  outline: none;
+  user-select: none;
+}
+
+.iuf-dropzone:hover:not(.iuf-dropzone--disabled),
+.iuf-dropzone:focus-visible:not(.iuf-dropzone--disabled) {
+  border-color: rgba(139, 92, 246, 0.65);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+/* Light-theme override */
+.seller-register-page-wrapper .iuf-dropzone {
+  border-color: rgba(139, 92, 246, 0.3);
+  background: #f9fafb;
+  color: #6b7280;
+}
+.seller-register-page-wrapper .iuf-dropzone:hover:not(.iuf-dropzone--disabled) {
+  border-color: #8b5cf6;
+  background: #f5f3ff;
+}
+
+.iuf-dropzone--disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.iuf-dropzone--uploading {
+  pointer-events: none;
+}
+
+/* Square — produk / logo kecil */
+.iuf-dropzone--square {
+  aspect-ratio: 1 / 1;
+  max-width: 160px;
+  padding: 16px;
+}
+
+/* Wide — banner / cover */
+.iuf-dropzone--wide {
+  aspect-ratio: 16 / 7;
+  padding: 20px;
+}
+
+/* Circle — avatar */
+.iuf-dropzone--circle {
+  aspect-ratio: 1 / 1;
+  max-width: 120px;
+  border-radius: 50%;
+  padding: 16px;
+}
+
+/* ── Drop zone contents ── */
+.iuf-dz-icon {
+  width: 36px;
+  height: 36px;
+  color: rgba(139, 92, 246, 0.7);
+  flex-shrink: 0;
+}
+
+.iuf-dz-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary, #f7f8ff);
+  text-align: center;
+}
+
+.seller-register-page-wrapper .iuf-dz-label {
+  color: #1f2937;
+}
+
+.iuf-dz-hint {
+  font-size: 0.78rem;
+  color: var(--muted, #8992aa);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.iuf-dz-meta {
+  font-size: 0.72rem;
+  color: rgba(148, 163, 184, 0.7);
+  text-align: center;
+}
+
+/* ── Preview ── */
+.iuf-preview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #0a0c19;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: box-shadow 0.2s;
+}
+
+.iuf-preview:hover .iuf-preview-actions {
+  opacity: 1;
+}
+
+.seller-register-page-wrapper .iuf-preview {
+  background: #f3f4f6;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Shapes */
+.iuf-preview--square {
+  aspect-ratio: 1 / 1;
+  max-width: 160px;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.iuf-preview--wide {
+  aspect-ratio: 16 / 7;
+  border-radius: 14px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.iuf-preview--circle {
+  aspect-ratio: 1 / 1;
+  max-width: 120px;
+  border-radius: 50%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.iuf-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+}
+
+/* ── Overlay spinner saat upload ── */
+.iuf-preview-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: inherit;
+  backdrop-filter: blur(4px);
+}
+
+.iuf-overlay-text {
+  font-size: 0.8rem;
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+/* ── Action buttons (Ganti / Hapus) ── */
+.iuf-preview-actions {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 40%, transparent);
+  opacity: 0;
+  transition: opacity 0.18s;
+  border-radius: inherit;
+}
+
+/* Selalu tampil di touch device */
+@media (hover: none) {
+  .iuf-preview-actions {
+    opacity: 1;
+  }
+}
+
+.iuf-btn-change,
+.iuf-btn-remove {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.15s;
+  white-space: nowrap;
+  min-height: 30px;
+}
+
+.iuf-btn-change {
+  background: rgba(255, 255, 255, 0.18);
+  color: #f8fafc;
+  backdrop-filter: blur(6px);
+}
+
+.iuf-btn-change:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.iuf-btn-remove {
+  background: rgba(239, 68, 68, 0.8);
+  color: #fff;
+}
+
+.iuf-btn-remove:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+/* ── Spinner ── */
+.iuf-spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgba(139, 92, 246, 0.25);
+  border-top-color: #8b5cf6;
+  border-radius: 50%;
+  animation: iuf-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes iuf-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Hint & Error ── */
+.iuf-hint {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: var(--muted, #8992aa);
+  line-height: 1.5;
+}
+
+.iuf-error {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ef4444;
+}
+
+.seller-register-page-wrapper .iuf-error {
+  color: #dc2626;
+}
+
+/* ── Hidden native input ── */
+.iuf-hidden-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .iuf-dropzone--square {
+    max-width: 140px;
+  }
+  .iuf-dropzone--circle {
+    max-width: 100px;
+  }
+  .iuf-preview--square {
+    max-width: 140px;
+  }
+  .iuf-preview--circle {
+    max-width: 100px;
+  }
+  .iuf-btn-change,
+  .iuf-btn-remove {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+}

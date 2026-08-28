@@ -1,0 +1,11 @@
+{
+  "site": {
+    "title": "GHub Marketplace",
+    "welcome": "Welcome to GHub"
+  },
+  "nav": {
+    "home": "Home",
+    "marketplace": "Marketplace",
+    "developers": "Developers"
+  }
+}

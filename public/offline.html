@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Offline - GHub</title>
+    <meta name="theme-color" content="#0a0a12" />
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #0a0a12;
+        color: #f5f5f7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      .card {
+        text-align: center;
+        padding: 40px 24px;
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 16px;
+        background: #12121c;
+        max-width: 420px;
+        margin: 16px;
+      }
+      h1 { font-size: 22px; margin: 12px 0 8px; }
+      p { color: #9a9aab; line-height: 1.6; }
+      button {
+        margin-top: 16px;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 10px;
+        background: #7c5cff;
+        color: #fff;
+        cursor: pointer;
+        font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div style="font-size:48px">📡</div>
+      <h1>Koneksi internet tidak tersedia</h1>
+      <p>
+        Kamu sedang offline. Transaksi seperti pembayaran dan checkout tidak dapat
+        dilakukan tanpa koneksi internet.
+      </p>
+      <button onclick="window.location.reload()">Coba Lagi</button>
+    </div>
+  </body>
+</html>
