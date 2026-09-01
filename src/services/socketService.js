@@ -24,11 +24,19 @@ export const SOCKET_EVENTS = {
   MARK_READ: 'mark-read',
 };
 
-// Socket URL: must be set via REACT_APP_SOCKET_URL in production.
-// Falls back to localhost only in local development.
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL
-  || (process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL.replace('/api', '') : '')
-  || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4000');
+// Socket URL resolution:
+// 1. REACT_APP_SOCKET_URL  — explicit override (recommended for production)
+// 2. Derived from REACT_APP_API_URL by stripping /api suffix
+// 3. Production safe fallback: same Vercel domain
+// 4. Dev-only fallback: localhost:4000
+const _apiUrl  = process.env.REACT_APP_API_URL || '';
+const _derived = _apiUrl.endsWith('/api') ? _apiUrl.slice(0, -4) : _apiUrl.replace(/\/api$/, '');
+const SOCKET_URL =
+  process.env.REACT_APP_SOCKET_URL ||
+  (_derived || null) ||
+  (process.env.NODE_ENV === 'production'
+    ? 'https://g-hub-self.vercel.app'   // production safe fallback
+    : 'http://localhost:4000');          // dev-only fallback
 
 let socket = null;
 

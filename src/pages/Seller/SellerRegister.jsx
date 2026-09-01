@@ -717,8 +717,12 @@ function Step4({ onSubmit: onFinish, onBack }) {
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setBusy(true);
     try {
-      await api.patch('/seller/applications/address', form);
-      onFinish();
+      const res = await api.patch('/seller/applications/address', form);
+      if (res.data?.success) {
+        onFinish();
+      } else {
+        setErrors({ form: res.data?.message || 'Gagal menyimpan. Coba lagi.' });
+      }
     } catch(err) {
       setErrors({ form: err?.response?.data?.message||'Gagal menyimpan. Coba lagi.' });
     } finally { setBusy(false); }
@@ -798,20 +802,30 @@ function Step4({ onSubmit: onFinish, onBack }) {
 
 // ─── Success screen ───────────────────────────────────────────────────────────
 function SuccessScreen() {
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
+  const { refreshUser } = useAuth();
+
   useEffect(() => {
-    const t = setTimeout(() => navigate('/seller/pending'), 5000);
+    // Refresh auth context so role menjadi SELLER setelah backend upgrade
+    const init = async () => {
+      try { await refreshUser(); } catch {}
+      // Redirect langsung ke seller dashboard
+      navigate('/seller/dashboard', { replace: true });
+    };
+    const t = setTimeout(init, 1500);
     return () => clearTimeout(t);
-  }, [navigate]);
+  }, [navigate, refreshUser]);
+
   return (
     <div className='srw-success'>
       <div className='srw-success-icon'><i className='fa-solid fa-circle-check' /></div>
-      <h3>Pendaftaran Berhasil Dikirim!</h3>
-      <p>Tim GHub akan meninjau data pendaftaran kamu dalam <strong>1–3 hari kerja</strong>.</p>
-      <p className='srw-success-sub'>Kamu akan diarahkan otomatis ke halaman status…</p>
-      <button className='srw-btn srw-btn--primary' onClick={()=>navigate('/seller/pending')}>
-        Lihat Status Pendaftaran
-      </button>
+      <h3>Pendaftaran Berhasil!</h3>
+      <p>Akun seller kamu sudah aktif. Kamu bisa langsung mulai berjualan.</p>
+      <p className='srw-success-sub' style={{ marginTop: 8, color: '#f59e0b' }}>
+        <i className='fa-solid fa-id-card' style={{ marginRight: 6 }} />
+        Verifikasi KTP diperlukan untuk mengaktifkan pencairan dana.
+      </p>
+      <p className='srw-success-sub'>Mengalihkan ke dashboard seller…</p>
     </div>
   );
 }

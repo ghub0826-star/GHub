@@ -149,8 +149,8 @@ function App() {
         <Route path='/buyer/settings/2fa' element={<ProtectedRoute allowedRoles={['BUYER', 'USER']}>{withSuspense(<TwoFactorSetup />)}</ProtectedRoute>} />
         <Route path='/buyer/settings/login-activity' element={<ProtectedRoute allowedRoles={['BUYER', 'USER']}>{withSuspense(<LoginActivity />)}</ProtectedRoute>} />
         <Route path='/buyer/disputes' element={<ProtectedRoute allowedRoles={['BUYER', 'USER']}>{withSuspense(<BuyerDisputes />)}</ProtectedRoute>} />
-        <Route path='/seller/register' element={<SellerRegister />} />
-        <Route path='/seller/pending' element={<SellerPending />} />
+        <Route path='/seller/register' element={<ProtectedRoute>{withSuspense(<SellerRegister />)}</ProtectedRoute>} />
+        <Route path='/seller/pending'  element={<ProtectedRoute>{withSuspense(<SellerPending />)}</ProtectedRoute>} />
         <Route path='/seller/dashboard' element={<ProtectedRoute allowedRoles={['SELLER']} requireSellerApproved>{withSuspense(<SellerDashboard />)}</ProtectedRoute>} />
         <Route path='/seller/products' element={<ProtectedRoute allowedRoles={['SELLER']} requireSellerApproved>{withSuspense(<SellerProducts />)}</ProtectedRoute>} />
         <Route path='/seller/products/new' element={<ProtectedRoute allowedRoles={['SELLER']} requireSellerApproved>{withSuspense(<SellerProductCreate />)}</ProtectedRoute>} />

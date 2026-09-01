@@ -69,3 +69,33 @@ export function suspendSeller(sellerId, reason = '') {
 export function restoreSeller(sellerId, note = '') {
   return api.post(`/admin/sellers/${sellerId}/restore`, { note });
 }
+
+// ─── KYC (Seller Identity Verification) ───────────────────────────────────
+
+export function listKyc(params = {}) {
+  return api.get('/admin/kyc', { params });
+}
+
+export function getKycDetail(sellerId) {
+  return api.get(`/admin/kyc/${sellerId}`);
+}
+
+export function startKycReview(sellerId) {
+  return api.post(`/admin/kyc/${sellerId}/start-review`);
+}
+
+export function approveKyc(sellerId, note = '') {
+  return api.post(`/admin/kyc/${sellerId}/approve`, { note });
+}
+
+export function rejectKyc(sellerId, reason) {
+  return api.post(`/admin/kyc/${sellerId}/reject`, { reason });
+}
+
+export function requestKycRevision(sellerId, reason) {
+  return api.post(`/admin/kyc/${sellerId}/request-revision`, { reason });
+}
+
+export function suspendKyc(sellerId, reason = '') {
+  return api.post(`/admin/kyc/${sellerId}/suspend`, { reason });
+}

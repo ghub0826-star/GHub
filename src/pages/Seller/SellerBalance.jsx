@@ -46,7 +46,13 @@ export default function SellerBalance() {
 
   useEffect(() => { load(); }, [load]);
 
-  const isKycVerified = kycStatus?.kyc_status === 'VERIFIED';
+  const isKycVerified = kycStatus?.kyc_status === 'APPROVED'
+    || kycStatus?.kyc_status === 'VERIFIED'
+    || kycStatus?.identity_verified === true;
+
+  const kycPending    = kycStatus?.kyc_status === 'PENDING' || kycStatus?.kyc_status === 'UNDER_REVIEW';
+  const kycRejected   = kycStatus?.kyc_status === 'REJECTED';
+  const kycRevision   = kycStatus?.kyc_status === 'REVISION_REQUIRED';
 
   const handleWithdraw = async (e) => {
     e.preventDefault();
@@ -115,21 +121,63 @@ export default function SellerBalance() {
         {/* KYC Banner */}
         {!loading && !isKycVerified && (
           <div style={{
-            padding: '14px 18px', borderRadius: 12,
-            background: 'rgba(245,158,11,0.08)',
-            border: '1px solid rgba(245,158,11,0.2)',
-            display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap',
+            padding: '16px 20px', borderRadius: 14,
+            background: kycPending
+              ? 'rgba(56,189,248,0.08)'
+              : kycRejected
+              ? 'rgba(239,68,68,0.08)'
+              : kycRevision
+              ? 'rgba(249,115,22,0.08)'
+              : 'rgba(245,158,11,0.08)',
+            border: `1px solid ${
+              kycPending  ? 'rgba(56,189,248,0.25)'
+              : kycRejected ? 'rgba(239,68,68,0.25)'
+              : kycRevision ? 'rgba(249,115,22,0.25)'
+              : 'rgba(245,158,11,0.25)'}`,
+            display: 'flex', alignItems: 'flex-start', gap: 14, flexWrap: 'wrap',
           }}>
-            <i className="fa-solid fa-id-card" style={{ color: '#f59e0b', fontSize: '1.3rem' }} />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, color: '#fbbf24' }}>Verifikasi Identitas Diperlukan</div>
-              <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: 2 }}>
-                Upload KTP dan selfie untuk mengaktifkan fitur penarikan dana.
+            <div style={{
+              width: 42, height: 42, borderRadius: 11, flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1.1rem',
+              background: kycPending ? 'rgba(56,189,248,0.12)' : kycRejected ? 'rgba(239,68,68,0.12)' : kycRevision ? 'rgba(249,115,22,0.12)' : 'rgba(245,158,11,0.12)',
+              color: kycPending ? '#38bdf8' : kycRejected ? '#ef4444' : kycRevision ? '#f97316' : '#f59e0b',
+            }}>
+              <i className={`fa-solid ${kycPending ? 'fa-clock' : kycRejected ? 'fa-circle-xmark' : kycRevision ? 'fa-rotate' : 'fa-id-card'}`} />
+            </div>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <div style={{ fontWeight: 800, color: '#f7f8ff', fontSize: '0.95rem', marginBottom: 4 }}>
+                {kycPending  ? 'Dokumen Sedang Diverifikasi'
+                 : kycRejected ? 'Verifikasi Identitas Ditolak'
+                 : kycRevision ? 'Revisi Dokumen Diperlukan'
+                 : 'Verifikasi Identitas Diperlukan untuk Tarik Dana'}
+              </div>
+              <div style={{ fontSize: '0.85rem', color: '#94a3b8', lineHeight: 1.5 }}>
+                {kycPending
+                  ? 'Tim kami sedang memeriksa dokumen KTP dan selfie kamu. Fitur penarikan dana akan aktif setelah disetujui.'
+                  : kycRejected
+                  ? `Dokumen ditolak${kycStatus?.rejection_reason ? `: ${kycStatus.rejection_reason}` : ''}. Kirim ulang dokumen yang valid.`
+                  : kycRevision
+                  ? `Catatan revisi: ${kycStatus?.revision_reason || 'Perbaiki dokumen dan kirim ulang.'}` 
+                  : 'Upload KTP dan foto selfie kamu untuk mengaktifkan fitur penarikan saldo penjualan.'}
               </div>
             </div>
-            <Link to="/seller/verification" className="button small" style={{ background: '#f59e0b', color: '#000', fontWeight: 700 }}>
-              Verifikasi Sekarang
-            </Link>
+            {!kycPending && (
+              <Link
+                to="/seller/verification"
+                className="button small"
+                style={{
+                  flexShrink: 0, fontWeight: 700,
+                  background: kycRejected ? 'rgba(239,68,68,0.15)' : kycRevision ? 'rgba(249,115,22,0.15)' : 'rgba(245,158,11,0.15)',
+                  border: `1px solid ${kycRejected ? 'rgba(239,68,68,0.35)' : kycRevision ? 'rgba(249,115,22,0.35)' : 'rgba(245,158,11,0.35)'}`,
+                  color: kycRejected ? '#ef4444' : kycRevision ? '#f97316' : '#f59e0b',
+                  display: 'inline-flex', alignItems: 'center', gap: 7,
+                }}
+              >
+                <i className={`fa-solid ${kycRejected || kycRevision ? 'fa-rotate-right' : 'fa-arrow-right'}`} />
+                {kycRejected || kycRevision ? 'Kirim Ulang Dokumen' : 'Verifikasi Sekarang'}
+              </Link>
+            )}
           </div>
         )}
 
@@ -193,11 +241,21 @@ export default function SellerBalance() {
                 className="button"
                 onClick={() => setShowForm(f => !f)}
                 disabled={!isKycVerified}
-                title={!isKycVerified ? 'Verifikasi identitas diperlukan' : ''}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
+                title={!isKycVerified
+                  ? kycPending
+                    ? 'Menunggu persetujuan verifikasi identitas'
+                    : 'Verifikasi identitas diperlukan sebelum tarik dana'
+                  : ''}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  opacity: !isKycVerified ? 0.5 : 1,
+                  cursor: !isKycVerified ? 'not-allowed' : 'pointer',
+                }}
               >
-                <i className={`fa-solid ${showForm ? 'fa-xmark' : 'fa-arrow-right-from-bracket'}`} />
-                {showForm ? 'Batal' : 'Tarik Dana'}
+                <i className={`fa-solid ${!isKycVerified ? 'fa-lock' : showForm ? 'fa-xmark' : 'fa-arrow-right-from-bracket'}`} />
+                {showForm ? 'Batal' : !isKycVerified
+                  ? kycPending ? 'Menunggu Verifikasi KYC' : 'KYC Diperlukan'
+                  : 'Tarik Dana'}
               </button>
             </div>
 

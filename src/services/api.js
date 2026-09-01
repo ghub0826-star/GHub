@@ -1,9 +1,17 @@
 import axios from 'axios';
 
-// Support both Vite (import.meta.env) and Create React App (process.env)
-const BASE = (import.meta && import.meta.env && import.meta.env.VITE_API_URL) 
-  ? import.meta.env.VITE_API_URL 
-  : (process.env.REACT_APP_API_URL || 'http://localhost:4000/api');
+// Resolve API base URL from environment variables.
+// CRA inlines REACT_APP_* at build time — the value is baked into the JS bundle.
+// Development: REACT_APP_API_URL=http://localhost:4000/api  (set in .env.local)
+// Production:  REACT_APP_API_URL=https://g-hub-self.vercel.app/api  (set in Vercel dashboard)
+// The localhost fallback is intentionally restricted to non-production builds only.
+const BASE =
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
+    ? import.meta.env.VITE_API_URL
+    : process.env.REACT_APP_API_URL ||
+      (process.env.NODE_ENV === 'production'
+        ? 'https://g-hub-self.vercel.app/api'   // safe production fallback
+        : 'http://localhost:4000/api');           // dev-only fallback
 
 const api = axios.create({
   baseURL: BASE,

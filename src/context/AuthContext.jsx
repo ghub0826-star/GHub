@@ -120,6 +120,20 @@ const register = async (payload) => {
 
   const updateUser = (patch) => setUser(prev => ({ ...prev, ...patch }));
 
+  // Re-fetch user dari server untuk update role (e.g. setelah jadi seller)
+  const refreshUser = async () => {
+    try {
+      const res = await authService.getCurrentUser();
+      if (res.data?.success && res.data.user) {
+        const u = res.data.user;
+        setUser(u);
+        try { localStorage.setItem('ghub_user', JSON.stringify({ id: u.id, username: u.username, email: u.email, role: u.role })); } catch {}
+        return u;
+      }
+    } catch {}
+    return null;
+  };
+
   const hasRole = (roles) => {
     if (!user) return false;
     if (!roles || roles.length === 0) return true;
@@ -142,7 +156,7 @@ const register = async (payload) => {
   };
 
   return (
-<AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, loginWithGoogle, loginAfter2FA, register, logout, updateUser, hasRole }}>
+<AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, loginWithGoogle, loginAfter2FA, register, logout, updateUser, refreshUser, hasRole }}>
       {children}
     </AuthContext.Provider>
   );

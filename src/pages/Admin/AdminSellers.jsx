@@ -18,6 +18,27 @@ function VerifBadge({ status }) {
   return <span className={`admin-badge admin-badge--${map[s] || 'pending'}`}>{status || 'PENDING'}</span>;
 }
 
+// KYC Badge (berbeda dari verif badge)
+function KycBadge({ status }) {
+  const s = String(status || '').toUpperCase();
+  const map = {
+    APPROVED:          { label:'KYC ✓',     color:'#10b981', bg:'rgba(16,185,129,0.12)',  border:'rgba(16,185,129,0.25)' },
+    VERIFIED:          { label:'KYC ✓',     color:'#10b981', bg:'rgba(16,185,129,0.12)',  border:'rgba(16,185,129,0.25)' },
+    PENDING:           { label:'KYC Pending', color:'#f59e0b', bg:'rgba(245,158,11,0.1)',  border:'rgba(245,158,11,0.2)'  },
+    UNDER_REVIEW:      { label:'KYC Review',  color:'#38bdf8', bg:'rgba(56,189,248,0.1)',  border:'rgba(56,189,248,0.2)'  },
+    REJECTED:          { label:'KYC Ditolak', color:'#ef4444', bg:'rgba(239,68,68,0.1)',   border:'rgba(239,68,68,0.2)'   },
+    REVISION_REQUIRED: { label:'KYC Revisi',  color:'#f97316', bg:'rgba(249,115,22,0.1)',  border:'rgba(249,115,22,0.2)'  },
+    SUSPENDED:         { label:'KYC Suspend', color:'#94a3b8', bg:'rgba(148,163,184,0.08)',border:'rgba(148,163,184,0.15)' },
+    NOT_SUBMITTED:     { label:'Belum KYC',   color:'#64748b', bg:'rgba(100,116,139,0.08)',border:'rgba(100,116,139,0.15)' },
+  };
+  const b = map[s] || { label:'KYC —', color:'#64748b', bg:'rgba(100,116,139,0.08)', border:'rgba(100,116,139,0.15)' };
+  return (
+    <span style={{ display:'inline-flex', alignItems:'center', gap:4, padding:'2px 8px', borderRadius:12, fontSize:'0.68rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.04em', background:b.bg, border:`1px solid ${b.border}`, color:b.color, whiteSpace:'nowrap' }}>
+      {b.label}
+    </span>
+  );
+}
+
 /* ── Confirm modal ── */
 function ConfirmModal({ title, placeholder, onConfirm, onCancel, confirmLabel = 'Konfirmasi', danger = false }) {
   const [value, setValue] = useState('');
@@ -370,6 +391,7 @@ export default function AdminSellers() {
                 <th>Toko / Pemilik</th>
                 <th>Email</th>
                 <th>Status Verifikasi</th>
+                <th>KYC</th>
                 <th>Rating</th>
                 <th>Total Penjualan</th>
                 <th>Terdaftar</th>
@@ -399,17 +421,33 @@ export default function AdminSellers() {
                   </td>
                   <td style={{ fontSize: '0.85rem' }}>{s.email}</td>
                   <td><VerifBadge status={s.verification_status || s.status} /></td>
+                  <td>
+                    <KycBadge status={
+                      s.identity_verified ? 'APPROVED'
+                      : s.kyc_status || s.verification_status || 'NOT_SUBMITTED'
+                    } />
+                  </td>
                   <td style={{ color: '#f59e0b' }}>{s.rating ? `${Number(s.rating).toFixed(1)} ★` : '—'}</td>
                   <td>{fmtNum(s.total_sales)}</td>
                   <td style={{ fontSize: '0.82rem', color: '#64748b' }}>{fmtDate(s.created_at || s.seller_created_at)}</td>
                   <td>
-                    <button
-                      className='button small'
-                      style={{ minHeight: 30, padding: '0 10px', fontSize: '0.78rem' }}
-                      onClick={() => setSelected(s.id)}
-                    >
-                      Kelola
-                    </button>
+                    <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                      <button
+                        className='button small'
+                        style={{ minHeight: 30, padding: '0 10px', fontSize: '0.78rem' }}
+                        onClick={() => setSelected(s.id)}
+                      >
+                        Kelola
+                      </button>
+                      <a
+                        href={`/super-admin/kyc-review?seller=${s.id}`}
+                        className='button small'
+                        style={{ minHeight:30, padding:'0 10px', fontSize:'0.78rem', background:'rgba(34,211,238,0.08)', border:'1px solid rgba(34,211,238,0.2)', color:'#22d3ee', textDecoration:'none', display:'inline-flex', alignItems:'center', gap:4 }}
+                        onClick={e => { e.preventDefault(); window.location.href = `/super-admin/kyc-review`; }}
+                      >
+                        <i className='fa-solid fa-id-card' style={{ fontSize:'0.7rem' }} />KYC
+                      </a>
+                    </div>
                   </td>
                 </tr>
               ))}
