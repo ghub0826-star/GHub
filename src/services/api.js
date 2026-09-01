@@ -2,16 +2,27 @@ import axios from 'axios';
 
 // Resolve API base URL from environment variables.
 // CRA inlines REACT_APP_* at build time — the value is baked into the JS bundle.
-// Development: REACT_APP_API_URL=http://localhost:4000/api  (set in .env.local)
-// Production:  REACT_APP_API_URL=https://g-hub-self.vercel.app/api  (set in Vercel dashboard)
-// The localhost fallback is intentionally restricted to non-production builds only.
+//
+// PENTING: Backend dan frontend di-deploy TERPISAH.
+//   - Frontend: https://g-hub-self.vercel.app  (React app)
+//   - Backend:  https://<nama>.onrender.com     (Express API)
+//
+// Jangan pernah set REACT_APP_API_URL ke domain frontend — backend tidak ada di sana.
+//
+// Development:  REACT_APP_API_URL=http://localhost:4000/api  (di .env.local)
+// Production:   Set di Vercel Dashboard → Environment Variables → REACT_APP_API_URL
+//               Contoh: https://ghub-backend.onrender.com/api
 const BASE =
   (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
     ? import.meta.env.VITE_API_URL
     : process.env.REACT_APP_API_URL ||
       (process.env.NODE_ENV === 'production'
-        ? 'https://g-hub-self.vercel.app/api'   // safe production fallback
-        : 'http://localhost:4000/api');           // dev-only fallback
+        ? null   // Tidak ada fallback di production — REACT_APP_API_URL WAJIB diset di Vercel dashboard
+        : 'http://localhost:4000/api');
+
+if (!BASE && process.env.NODE_ENV === 'production') {
+  console.error('[api.js] REACT_APP_API_URL tidak diset! Set environment variable ini di Vercel Dashboard.');
+}
 
 const api = axios.create({
   baseURL: BASE,
